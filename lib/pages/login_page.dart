@@ -1,4 +1,7 @@
+import 'package:chat/widgets/btn_blue.dart';
 import 'package:chat/widgets/custom_input.dart';
+import 'package:chat/widgets/custom_label.dart';
+import 'package:chat/widgets/logo.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
@@ -6,41 +9,32 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-        backgroundColor: Color(0xffF2F2F2),
+    return Scaffold(
+        backgroundColor: const Color(0xffF2F2F2),
         body: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _Logo(),
-              _Form(),
-              _Labels(),
-              Text('Términos y condiciones de uso',
-                  style: TextStyle(fontWeight: FontWeight.w200))
-            ],
+          maintainBottomViewPadding: false,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Logo(
+                    message: 'Messenger',
+                  ),
+                  _Form(),
+                  CustomLabel(
+                      titleOne: '¿No tienes cuenta?',
+                      titleTwo: '¡Crea una ahora!',
+                      ruta: 'register'),
+                  Text('Términos y condiciones de uso',
+                      style: TextStyle(fontWeight: FontWeight.w200))
+                ],
+              ),
+            ),
           ),
         ));
-  }
-}
-
-class _Logo extends StatelessWidget {
-  const _Logo();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.only(top: 50),
-        width: 220,
-        child: const Column(
-          children: [
-            Image(image: AssetImage('assets/tag-logo.png')),
-            SizedBox(height: 20),
-            Text('Messenger', style: TextStyle(fontSize: 30))
-          ],
-        ),
-      ),
-    );
   }
 }
 
@@ -53,7 +47,8 @@ class _Form extends StatefulWidget {
 
 class _FormState extends State<_Form> {
   final FocusNode _focusNode = FocusNode();
-
+  final TextEditingController emailCtrl = TextEditingController();
+  final TextEditingController passwordCtrl = TextEditingController();
   @override
   void dispose() {
     _focusNode.dispose();
@@ -66,33 +61,27 @@ class _FormState extends State<_Form> {
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
       child: Column(children: [
-        CustomInput(),
-        CustomInput(),
-        CustomInput(),
+        CustomInput(
+          icon: Icons.mail_outline,
+          placeholder: 'Email',
+          keyboardType: TextInputType.emailAddress,
+          textController: emailCtrl,
+        ),
+        CustomInput(
+          icon: Icons.lock_outline,
+          placeholder: 'Contraseña',
+          keyboardType: TextInputType.text,
+          textController: passwordCtrl,
+          isPassword: true,
+        ),
+        BtnBlue(
+          title: 'Ingresar',
+          onPressed: () {
+            print(emailCtrl.text);
+            print(passwordCtrl.text);
+          },
+        )
       ]),
-    );
-  }
-}
-
-class _Labels extends StatelessWidget {
-  const _Labels();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text('No tienes cuenta?',
-            style: TextStyle(
-                color: Colors.black54,
-                fontSize: 15,
-                fontWeight: FontWeight.w300)),
-        const SizedBox(height: 10),
-        Text('¡Crea una ahora!',
-            style: TextStyle(
-                color: Colors.blue[600],
-                fontSize: 18,
-                fontWeight: FontWeight.bold))
-      ],
     );
   }
 }

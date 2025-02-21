@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../models/user.dart';
 
@@ -10,6 +11,9 @@ class UsuariosPage extends StatefulWidget {
 }
 
 class _UsuariosPageState extends State<UsuariosPage> {
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
   final usuarios = [
     User(
         online: true,
@@ -42,16 +46,29 @@ class _UsuariosPageState extends State<UsuariosPage> {
         ),
         actions: [
           Container(
-            margin: EdgeInsets.only(right: 10),
+            margin: const EdgeInsets.only(right: 10),
             child: Icon(Icons.check_circle, color: Colors.blue[400]),
           )
         ],
       ),
-      body: ListView.separated(
-        itemBuilder: (_, i) => _userListTitle(usuarios[i]),
-        separatorBuilder: (_, i) => const Divider(),
-        itemCount: usuarios.length,
+      body: SmartRefresher(
+        onRefresh: _getUsers,
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Icon(Icons.check, color: Colors.blue[400]),
+          waterDropColor: Colors.blue[400]!,
+        ),
+        controller: _refreshController,
+        child: _listViewUsers(),
       ),
+    );
+  }
+
+  ListView _listViewUsers() {
+    return ListView.separated(
+      itemBuilder: (_, i) => _userListTitle(usuarios[i]),
+      separatorBuilder: (_, i) => const Divider(),
+      itemCount: usuarios.length,
     );
   }
 
@@ -71,5 +88,10 @@ class _UsuariosPageState extends State<UsuariosPage> {
             borderRadius: BorderRadius.circular(100)),
       ),
     );
+  }
+
+  _getUsers() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    _refreshController.refreshCompleted();
   }
 }
